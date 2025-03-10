@@ -151,7 +151,7 @@ void TaskLogToSD(void *pvParameters)
       }
       else
       {
-        Serial.println("⚠️ Error opening log file! Retrying in 5 seconds...");
+        Serial.println("Error opening log file! Retrying in 5 seconds...");
         vTaskDelay(pdMS_TO_TICKS(5000)); // Wait before retrying
         continue;                        // Skip this iteration and try again
       }
