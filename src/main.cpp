@@ -1,6 +1,5 @@
 /*
- *Project: Power/Energy Detection with Data Storage
- *Developer: Paul Rodolf P. Castor
+ *Project: Power/Energy Meter with Data Storage
  *Date: February 2025
  *Version: 1.5
  */
