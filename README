@@ -1,4 +1,4 @@
-__PlatformIO ESP32 Project__
+**PlatformIO ESP32-based Energy meter with Data Storage**
 
 ## Overview
 This repository contains a PlatformIO-based project designed for the ESP32-based Energy Meter with Data Storage. Follow the instructions below to set up PlatformIO, build the project, and upload it to your ESP32 development board.
