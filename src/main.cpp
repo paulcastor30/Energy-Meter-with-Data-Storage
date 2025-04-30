@@ -31,6 +31,7 @@ struct SensorData
   float shuntVoltage;
   float busVoltage;
   float current_mA;
+  float loadvoltage;
   float power_mW;
 } sharedData;
 
@@ -45,11 +46,14 @@ bool initializeRTC()
   {
     if (rtc.begin())
     {
-      if (rtc.lostPower())
+      /*
+      if (rtc.lostPower()) // should be masulod ni sya since permi gaka outdated ang time
       {
         Serial.println("RTC lost power, setting time...");
         rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
       }
+      */
+      rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
       return true;
     }
     Serial.println("Failed to find RTC. Retrying...");
@@ -116,7 +120,9 @@ void TaskReadINA219(void *pvParameters)
       sharedData.shuntVoltage = ina219.getShuntVoltage_mV();
       sharedData.busVoltage = ina219.getBusVoltage_V();
       sharedData.current_mA = ina219.getCurrent_mA();
-      sharedData.power_mW = ina219.getPower_mW();
+      sharedData.loadvoltage = sharedData.busVoltage + (sharedData.shuntVoltage / 1000);
+      // sharedData.power_mW = ina219.getPower_mW(); // old one but not stable
+      sharedData.power_mW = sharedData.loadvoltage * sharedData.current_mA;
       xSemaphoreGive(dataMutex);
     }
     vTaskDelay(pdMS_TO_TICKS(1000)); // 1-second delay
@@ -133,11 +139,11 @@ void TaskLogToSD(void *pvParameters)
       char buffer[100];
 
       // Format data as a CSV line
-      sprintf(buffer, "%04d-%02d-%02d %02d:%02d:%02d, %.2f, %.2f, %.2f, %.2f",
+      sprintf(buffer, "%04d-%02d-%02d %02d:%02d:%02d, %.2f, %.2f, %.2f, %.2f, %.2f",
               sharedData.now.year(), sharedData.now.month(), sharedData.now.day(),
               sharedData.now.hour(), sharedData.now.minute(), sharedData.now.second(),
               sharedData.shuntVoltage, sharedData.busVoltage,
-              sharedData.current_mA, sharedData.power_mW);
+              sharedData.current_mA, sharedData.power_mW, sharedData.loadvoltage);
 
       Serial.println(buffer); // Print to Serial Monitor
 
